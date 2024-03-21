@@ -4,6 +4,7 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    iqlquery.url = "github:inferenceql/inferenceql.query";
   };
 
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
@@ -18,9 +19,16 @@
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }:
       let
-        toolkit = self.lib.basicTools pkgs;
+        ociImgBase = pkgs.callPackage ./pkgs/oci/base {
+          inherit nixpkgs;
+          basicTools = self.lib.basicTools;
+        };
+        ociImgIqlQuery = pkgs.callPackage ./pkgs/oci/inferenceql.query {
+          inherit nixpkgs ociImgBase;
+          iqlquery = inputs.iqlquery;
+        };
 
-        baseImg = pkgs.callPackage ./pkgs/oci/base {inherit nixpkgs; basicTools = self.lib.basicTools;};
+        toolkit = self.lib.basicTools pkgs;
       in {
         # Per-system attributes can be defined here. The self' and inputs'
         # module parameters provide easy access to attributes of the same
@@ -31,7 +39,7 @@
         };
 
         packages = {
-          inherit baseImg;
+          inherit ociImgBase ociImgIqlQuery;
         };
       };
       flake = {
