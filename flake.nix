@@ -17,6 +17,11 @@
         ./lib/devtools
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
+
+
+      # NOTE: This property is consumed by flake-parts.mkFlake to specify outputs of
+      # the flake that are replicated for each supported system. Typically packages,
+      # apps, and devshells are per system.
       perSystem = { config, self', inputs', pkgs, system, ... }:
       let
         ociImgBase = pkgs.callPackage ./pkgs/oci/base {
@@ -42,6 +47,11 @@
           inherit ociImgBase ociImgIqlQuery;
         };
       };
+
+      # NOTE: this property is consumed by flake-parts.mkFlake to define fields
+      # of the flake that are NOT per system, such as generic `lib` code or other
+      # universal exports. Note that in our case, the lib is equivalently declared
+      # by modules that are imported (see ./lib/devtools/default.nix)
       flake = {
         # The usual flake attributes can be defined here, including system-
         # agnostic ones like nixosModule and system-enumerating ones, although
