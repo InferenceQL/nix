@@ -7,6 +7,9 @@
     iqlquery.url = "github:inferenceql/inferenceql.query";
   };
 
+  nixConfig.extra-substituters = [ "https://numtide.cachix.org" ];
+  nixConfig.extra-trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
+
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
@@ -34,7 +37,16 @@
         };
 
         toolkit = self.lib.basicTools pkgs;
+
+        bayes3d = pkgs.callPackage ./pkgs/bayes3d { };
       in {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+            cudaSupport = true;
+          };
+        };
         # Per-system attributes can be defined here. The self' and inputs'
         # module parameters provide easy access to attributes of the same
         # system.
@@ -44,7 +56,11 @@
         };
 
         packages = {
-          inherit ociImgBase ociImgIqlQuery;
+          inherit
+            ociImgBase
+            ociImgIqlQuery
+            bayes3d
+          ;
         };
       };
 
