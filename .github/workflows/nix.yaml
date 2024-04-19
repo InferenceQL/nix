@@ -14,17 +14,26 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-23.11
     - uses: DeterminateSystems/magic-nix-cache-action@v2
-    - run: |
+    - name:  build sppl
+      run: |
+        nix build \
+          -L \
+          -o ./sppl \
+          '.#sppl'
+    - name:  build base image (not pushed)
+      run: |
         nix build \
           -L \
           -o ./imgBase \
           '.#ociImgBase'
-    - run: |
+    - name:  build Gensql Query image
+      run: |
         nix build \
           -L \
           -o ./imgGensqlQuery \
           '.#ociImgGensqlQuery'
-    - run: |
+    - name:  build Loom image
+      run: |
         nix build \
           -L \
           -o ./imgLoom \

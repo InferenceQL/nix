@@ -25,6 +25,8 @@
       # apps, and devshells are per system.
       perSystem = { config, self', inputs', pkgs, system, ... }:
       let
+        sppl = pkgs.callPackage ./pkgs/sppl {};
+
         ociImgBase = pkgs.callPackage ./pkgs/oci/base {
           inherit nixpkgs;
           basicTools = self.lib.basicTools;
@@ -46,6 +48,8 @@
         packages = loom.more_packages // {
           inherit
             loom
+            sppl
+
             ociImgBase
             ociImgGensqlQuery
             ociImgLoom
@@ -53,7 +57,7 @@
         };
       in {
         devShells.default = pkgs.mkShell {
-          buildInputs = [] ++ toolkit;
+          packages = [] ++ toolkit;
         };
 
         inherit packages;
