@@ -14,7 +14,7 @@
         # 1. Add foo to inputs
         # 2. Add foo as a parameter to the outputs function
         # 3. Add here: foo.flakeModule
-        ./lib/devtools
+        ./lib
         inputs.flake-parts.flakeModules.easyOverlay
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
@@ -36,35 +36,24 @@
 
         toolkit = self.lib.basicTools pkgs;
 
-        callPackage = pkgs.newScope (
-          pkgs
-          // { inherit callPackage; }
-          // packages
-        );
-        callPy3Package = pkgs.newScope (
-          pkgs
-          // pkgs.python3Packages
-          // { inherit callPackage; }
-          // packages
-        );
+        loom = (self.lib.mkScopes pkgs).callPy3Package ./pkgs/loom { };
 
-        packages = {
+        ociImgLoom = pkgs.callPackage ./pkgs/oci/inferenceql.loom {
+          inherit nixpkgs ociImgBase;
+        };
+
+        packages = loom.more_packages // {
           inherit
             ociImgBase
             ociImgGensqlQuery
+            ociImgLoom
           ;
-          
-          goftests = callPackage ./pkgs/goftests { };
-          parsable = callPackage ./pkgs/parsable { };
-          pymetis = callPackage ./pkgs/pymetis { };
-          distributions = callPackage ./pkgs/distributions { };
-          loom = callPy3Package ./pkgs/loom { };
         };
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = [] ++ toolkit;
         };
-        
+
         inherit packages;
       };
 

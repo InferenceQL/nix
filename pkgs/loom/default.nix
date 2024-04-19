@@ -6,21 +6,18 @@
 , wheel
 , cpplint
 , cython_0
-, goftests
 , imageio
 , matplotlib
 , mock
 , nose
 , numpy
 , pandas
-, parsable
 , pep8
 , pkgs
 , protobuf3_20
 , pyflakes
 , python3Packages
 , pytest
-, pymetis
 , scikit-learn
 , scipy
 , simplejson
@@ -29,10 +26,14 @@
 , stdenv
 , zlib
 , eigen
-, distributions
 , gperftools
 }:
 let
+  goftests = callPackage ./../goftests { };
+  parsable = callPackage ./../parsable { };
+  pymetis = callPackage ./../pymetis { };
+  distributions = callPackage ./../distributions {inherit goftests parsable;};
+
   protobuf = protobuf3_20;
 
   version = "0.2.10";
@@ -118,7 +119,7 @@ buildPythonPackage {
     pyflakes
   ];
 
-  # https://github.com/numba/numba/issues/8698#issuecomment-1584888063 
+  # https://github.com/numba/numba/issues/8698#issuecomment-1584888063
   env.NUMPY_EXPERIMENTAL_DTYPE_API = 1;
 
   env.DISTRIBUTIONS_USE_PROTOBUF = 1;
@@ -178,6 +179,15 @@ buildPythonPackage {
   '';
 
   passthru.loom-cpp = loom-cpp;
+
+  passthru.more_packages = {
+    inherit
+      goftests
+      distributions
+      pymetis
+      parsable
+    ;
+  };
 
   passthru.tests.run = callPackage ./test.nix { inherit src; };
 
