@@ -36,7 +36,8 @@
 
         toolkit = self.lib.basicTools pkgs;
 
-        loom = (self.lib.mkScopes pkgs).callPy3Package ./pkgs/loom { };
+        scopes = (self.lib.mkScopes pkgs);
+        loom = scopes.callPy3Package ./pkgs/loom { };
 
         ociImgLoom = pkgs.callPackage ./pkgs/oci/inferenceql.loom {
           inherit nixpkgs ociImgBase;
