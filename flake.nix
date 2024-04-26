@@ -1,10 +1,10 @@
 {
-  description = "Nix utilities and cross-repo build artifacts for inferenceql";
+  description = "Nix utilities and cross-repo build artifacts for OpenGen";
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    iqlquery.url = "github:inferenceql/inferenceql.query";
+    gensqlquery.url = "github:OpenGen/GenSQL.query";
   };
 
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
@@ -29,9 +29,9 @@
           inherit nixpkgs;
           basicTools = self.lib.basicTools;
         };
-        ociImgIqlQuery = pkgs.callPackage ./pkgs/oci/inferenceql.query {
+        ociImgGensqlQuery = pkgs.callPackage ./pkgs/oci/gensql.query {
           inherit nixpkgs ociImgBase;
-          iqlquery = inputs.iqlquery;
+          gensqlquery = inputs.gensqlquery;
         };
 
         toolkit = self.lib.basicTools pkgs;
@@ -51,7 +51,7 @@
         packages = {
           inherit
             ociImgBase
-            ociImgIqlQuery
+            ociImgGensqlQuery
           ;
           
           goftests = callPackage ./pkgs/goftests { };

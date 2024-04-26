@@ -27,9 +27,9 @@ jobs:
     - run: |
         nix build \
           -L \
-          -o ./imgIqlQuery \
-          '.#ociImgIqlQuery'
+          -o ./imgGensqlQuery \
+          '.#ociImgGensqlQuery'
     - if: github.ref == 'refs/heads/main'
       run: |
-        docker load -i ./imgIqlQuery
-        docker push --all-tags probcomp/inferenceql.query
+        docker load -i ./imgGensqlQuery
+        docker push --all-tags probcomp/gensql.query

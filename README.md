@@ -1,6 +1,6 @@
-# InferenceQL/nix
+# OpenGen/nix
 
-This repo holds Nix flake, modules, packages, and reusable utility Nix language code for use across the InferenceQL ecosystem.
+This repo holds Nix flake, modules, packages, and reusable utility Nix language code for use across the OpenGen ecosystem.
 
 ## Usage
 
@@ -9,7 +9,7 @@ This repo holds Nix flake, modules, packages, and reusable utility Nix language 
 Currently, you can build a package directly like so:
 
 ```bash
-nix build github.com:InferenceQL/nix#ociImgBase
+nix build github.com:OpenGen/nix#ociImgBase
 ```
 
 ### Import utility code
@@ -20,11 +20,11 @@ To access the `lib` code exported by this flake, declare this repo as a flake in
 {
   inputs = {
     nixpkgs.url = ...
-    iqlnix.url = "github:InferenceQL/nix";
+    gensqlnix.url = "github:OpenGen/nix";
   };
-  outputs = inputs@{ nixpkgs, iqlnix , ... }: let
+  outputs = inputs@{ nixpkgs, gensqlnix, ... }: let
     # call some function
-    toolbox = iqlnix.lib.basicTools "aarch64-darwin";
+    toolbox = gensqlnix.lib.basicTools "aarch64-darwin";
   in {
     ...
   };
