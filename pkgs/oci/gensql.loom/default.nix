@@ -12,7 +12,7 @@
 
   loom = scopes.callPy3Package ./../../loom { };
 in pkgs.dockerTools.buildLayeredImage {
-  name = "probcomp/inferenceql.loom";
+  name = "probcomp/gensql.loom";
   tag = systemWithLinux;
   fromImage = ociImgBase;
   contents = [ loom python ];
