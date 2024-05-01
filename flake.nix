@@ -45,6 +45,7 @@
 
         packages = loom.more_packages // {
           inherit
+            loom
             ociImgBase
             ociImgGensqlQuery
             ociImgLoom
