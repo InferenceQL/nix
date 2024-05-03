@@ -8,8 +8,8 @@
   nixpkgs-sppl = import (pkgs.fetchFromGitHub {
       owner = "nixos";
       repo = "nixpkgs";
-      rev = "35a74aa665a681b60d68e3d3400fcaa11690ee50";
-      sha256 = "sha256-6qjgWliwYtFsEUl4/SjlUaUF9hSSfVoaRZzN6MCgslg=";
+      rev = "994df04c3c700fe9edb1b69b82ba3c627e5e04ff";
+      sha256 = "sha256-60hLkFqLRI+5XEeacXaVPHdl6m/P8rN2L4luLGxklqs=";
     }) {inherit system;};
   pypkgs = nixpkgs-sppl.python39Packages;
 
@@ -17,9 +17,12 @@
     pname = "sppl";
     version = "2.0.4";
 
-    src = pypkgs.fetchPypi {
-      inherit pname version;
-      sha256 = "sha256-QAp77L8RpN86V4O8F1zNA8O/szm9hNa4wWFT13av6BE=";
+    #  Use a  version of sppl that has Nixpkgs-compatible versions of some packages
+    src = pkgs.fetchFromGitHub {
+      owner = "probsys";
+      repo = "sppl";
+      rev = "ab6435648e56df1603c4d8d27029605c247cb9f5";
+      sha256 = "sha256-hFIR073wDRXyt8EqFkLZNDdGUjPTyWYOfDg5eGTjvz0=";
     };
 
     propagatedBuildInputs = with pypkgs; [
@@ -41,6 +44,7 @@
     pipInstallFlags = [ "--no-deps" ];
 
     passthru.runtimePython = nixpkgs-sppl.python39.withPackages (p: [ sppl ]);
+    passthru.checkInputs = checkInputs;
   };
 
 in sppl

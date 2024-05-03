@@ -60,6 +60,14 @@
           packages = [] ++ toolkit;
         };
 
+        devShells.sppl = pkgs.mkShell {
+          packages
+            = [sppl]
+            ++ sppl.checkInputs
+            ++ toolkit
+          ;
+        };
+
         inherit packages;
       };
 
