@@ -1,19 +1,23 @@
 {
-  description = "Nix utilities and cross-repo build artifacts for OpenGen";
+  description = "Nix builds of environments and OCI images containing OpenGen tools";
 
   inputs = {
-    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    opengen = {
+      url = "./..";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    gensqlquery.url = "github:OpenGen/GenSQL.query";
   };
 
-  outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
+  outputs = inputs@{ self, nixpkgs, flake-parts, opengen, gensqlquery, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         # To import a flake module
         # 1. Add foo to inputs
         # 2. Add foo as a parameter to the outputs function
         # 3. Add here: foo.flakeModule
-        ./lib
         inputs.flake-parts.flakeModules.easyOverlay
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
@@ -24,25 +28,36 @@
       # apps, and devshells are per system.
       perSystem = { config, self', inputs', pkgs, system, ... }:
       let
-        sppl = pkgs.callPackage ./pkgs/sppl {};
+        toolkit = opengen.lib.basicTools pkgs;
+        sppl = opengen.packages.${system}.sppl;
 
-        ociImgBase = pkgs.callPackage ./pkgs/ociBase {
-          inherit nixpkgs;
-          basicTools = self.lib.basicTools;
+        ociImgGensqlQuery = pkgs.callPackage ./images/gensql.query {
+          inherit nixpkgs opengen gensqlquery;
         };
 
-        scopes = (self.lib.mkScopes pkgs);
-        loom = scopes.callPy3Package ./pkgs/loom { };
+        ociImgLoom = pkgs.callPackage ./images/gensql.loom {
+          inherit nixpkgs opengen;
+        };
 
-        packages = loom.more_packages // {
+        packages = {
           inherit
-            loom
-            sppl
-
-            ociImgBase
+            ociImgGensqlQuery
+            ociImgLoom
           ;
         };
       in {
+        devShells.default = pkgs.mkShell {
+          packages = [] ++ toolkit;
+        };
+
+        devShells.sppl = pkgs.mkShell {
+          packages
+            = [sppl]
+            ++ sppl.checkInputs
+            ++ toolkit
+          ;
+        };
+
         inherit packages;
       };
 

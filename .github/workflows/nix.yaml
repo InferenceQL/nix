@@ -31,13 +31,13 @@ jobs:
         nix build \
           -L \
           -o ./imgGensqlQuery \
-          '.#ociImgGensqlQuery'
+          './envs-flake#ociImgGensqlQuery'
     - name:  build Loom image
       run: |
         nix build \
           -L \
           -o ./imgLoom \
-          '.#ociImgLoom'
+          './envs-flake#ociImgLoom'
 
     - name: Login to Docker Hub
       # only run this  when running on main, because
@@ -57,4 +57,4 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |
         docker load -i ./imgLoom
-        docker push --all-tags probcomp/inferenceql.loom
+        docker push --all-tags probcomp/gensql.loom
